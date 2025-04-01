@@ -1,6 +1,6 @@
 "use client"
 
-import Logo from '../atoms/Logo'
+import Image from 'next/image'
 import Navigation from '../molecules/Navigation'
 import Button from '../atoms/Button'
 
@@ -12,7 +12,7 @@ export default function Header({
     <header 
       className={`
         w-full px-4 py-4 md:px-8 md:py-6 fixed top-0 left-0 right-0 
-        backdrop-blur-sm transition-all duration-1000 pointer-events-auto z-50 h-24
+        backdrop-blur-sm transition-all duration-1000 pointer-events-auto z-50
         ${sidebarOpen ? 'shadow-none' : 'shadow-sm'}
         border-b
       `}
@@ -21,8 +21,16 @@ export default function Header({
         borderColor: sidebarOpen ? `${flavorColor}60` : `${flavorColor}30`
       }}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Logo flavorColor={flavorColor} />
+      <div className="max-w-7xl mx-auto flex items-center justify-between h-full">
+        <div className="relative w-[180px] h-[60px]">
+          <Image 
+            src="/Logo.png"
+            alt="Vigor Viv Logo"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
         <Navigation color={flavorColor} />
         <Button 
           className="hidden md:block"
