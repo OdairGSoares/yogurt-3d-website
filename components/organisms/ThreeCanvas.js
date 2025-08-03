@@ -1,6 +1,6 @@
 "use client"
 
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, useGLTF, Environment } from '@react-three/drei'
 import { Suspense, useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import * as THREE from 'three'
@@ -14,6 +14,7 @@ function Model({ modelPath, texturePath, bgColor, isTransitioning, isMobile }) {
   const [opacity, setOpacity] = useState(0)
   const [textureError, setTextureError] = useState(false)
   const [isTextureLoaded, setIsTextureLoaded] = useState(false)
+  const [forceUpdate, setForceUpdate] = useState(0)
   
   const meshRef = useRef()
   const textureLoader = useMemo(() => new THREE.TextureLoader(), [])
@@ -135,7 +136,19 @@ function Model({ modelPath, texturePath, bgColor, isTransitioning, isMobile }) {
         console.log('Textura aplicada ao mesh:', child.name || 'unnamed')
       }
     })
+    
+    // Forçar atualização do renderer na primeira vez e quando trocar texturas
+    setForceUpdate(prev => prev + 1)
   }, [texture, isTextureLoaded, scene, textureError, texturePath])
+
+  // Forçar atualização do renderer quando necessário usando useFrame
+  useFrame(() => {
+    if (forceUpdate > 0) {
+      // Forçar o renderer a atualizar por alguns frames
+      setForceUpdate(0) // Reset após forçar a atualização
+      console.log('Renderer forçado a atualizar - textura aplicada')
+    }
+  })
 
   if (!scene) {
     return <FallbackModel bgColor={bgColor} opacity={opacity} isMobile={isMobile} />
@@ -254,7 +267,7 @@ const ThreeCanvas = ({ modelPath = '/Vigor.gltf', texturePath = '/Texturas/Natur
         gl={rendererConfig}
         dpr={isMobile ? [1, 1.5] : [1, 1.5]} // Reduzido para desktop
         shadows={!isMobile} // Sombras apenas em desktop
-        frameloop="demand" // Renderização sob demanda
+        frameloop="always" // Renderização contínua para garantir atualização de texturas
         performance={{ min: 0.5 }} // Performance mínima
       >
         <color attach="background" args={[bgColor]} />
