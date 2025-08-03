@@ -7,14 +7,16 @@ export default function CategoryPill({
   color = "#7E22CE",
   disabled = false,
   className = "",
+  isMobile = false,
   ...props 
 }) {
   return (
     <button
       className={`
-        px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
+        rounded-full font-medium transition-all duration-300
         ${isSelected ? "text-white shadow-md" : "bg-white/90 border shadow-sm"} 
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+        ${isMobile ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"}
         ${className}
       `}
       style={{

@@ -10,7 +10,8 @@ export default function FlavorSelector({
   selectedFlavor,
   onCategoryChange,
   onFlavorChange,
-  isTransitioning = false
+  isTransitioning = false,
+  isMobile = false
 }) {
   const categoryLabels = {
     tradicionais: "Tradicionais",
@@ -20,7 +21,9 @@ export default function FlavorSelector({
 
   return (
     <div 
-      className="backdrop-blur-md rounded-3xl p-6 shadow-xl border transition-all duration-1000 relative z-10 pointer-events-auto bg-white/90"
+      className={`backdrop-blur-md rounded-3xl shadow-xl border transition-all duration-1000 relative z-10 pointer-events-auto bg-white/90 ${
+        isMobile ? 'p-3' : 'p-6'
+      }`}
       style={{ 
         borderColor: `${selectedFlavor.color}60`,
       }}
@@ -31,7 +34,9 @@ export default function FlavorSelector({
           style={{ backgroundColor: selectedFlavor.color }}
         ></div>
         <h3 
-          className="text-lg font-bold transition-colors duration-1000"
+          className={`font-bold transition-colors duration-1000 ${
+            isMobile ? 'text-base' : 'text-lg'
+          }`}
           style={{ color: selectedFlavor.color }}
         >
           Escolha seu sabor
@@ -45,6 +50,7 @@ export default function FlavorSelector({
         categoryLabels={categoryLabels}
         color={selectedFlavor.color}
         isTransitioning={isTransitioning}
+        isMobile={isMobile}
       />
 
       <FlavorGrid 
@@ -52,6 +58,7 @@ export default function FlavorSelector({
         selectedFlavor={selectedFlavor}
         onFlavorChange={onFlavorChange}
         isTransitioning={isTransitioning}
+        isMobile={isMobile}
       />
     </div>
   )

@@ -2,9 +2,14 @@
 
 import Badge from "../atoms/Badge"
 
-export default function FeatureBadges({ isZeroLactose = false, color = "#7E22CE" }) {
+export default function FeatureBadges({ 
+  isZeroLactose = false, 
+  features = [],
+  color = "#7E22CE" 
+}) {
   return (
-    <div className="pt-2 space-y-4">
+    <div className="pt-2 space-y-2">
+      {/* Badge de Zero Lactose */}
       {isZeroLactose && (
         <Badge 
           variant="dot" 
@@ -14,6 +19,22 @@ export default function FeatureBadges({ isZeroLactose = false, color = "#7E22CE"
         </Badge>
       )}
       
+      {/* Features específicas do flavor */}
+      {features && features.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {features.map((feature, index) => (
+            <Badge 
+              key={index}
+              variant="dot" 
+              color={color}
+            >
+              {feature}
+            </Badge>
+          ))}
+        </div>
+      )}
+      
+      {/* Badge padrão */}
       <Badge 
         variant="dot" 
         color={color}

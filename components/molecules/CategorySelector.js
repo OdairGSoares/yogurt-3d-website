@@ -8,10 +8,11 @@ export default function CategorySelector({
   onCategoryChange,
   categoryLabels = {},
   color = "#7E22CE",
-  isTransitioning = false
+  isTransitioning = false,
+  isMobile = false
 }) {
   return (
-    <div className="flex flex-wrap gap-2 mb-4">
+    <div className={`flex flex-wrap gap-2 mb-4 ${isMobile ? 'gap-1' : 'gap-2'}`}>
       {categories.map((category) => (
         <CategoryPill
           key={category}
@@ -19,6 +20,7 @@ export default function CategorySelector({
           onClick={() => onCategoryChange(category)}
           color={color}
           disabled={isTransitioning}
+          isMobile={isMobile}
         >
           {categoryLabels[category] || category}
         </CategoryPill>

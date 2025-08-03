@@ -7,6 +7,7 @@ import Header from "../organisms/Header"
 import Sidebar from "../organisms/Sidebar"
 import FlavorSelector from "../organisms/FlavorSelector"
 import ModelViewer from "../organisms/ModelViewer"
+import { useMobile } from "../../lib/hooks/useMobile"
 
 // Loading placeholder while the model viewer loads
 function LoadingPlaceholder({ flavor }) {
@@ -107,6 +108,7 @@ export default function YogurtShowcase({ flavorsData }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const { isMobile, isClient: mobileIsClient } = useMobile();
 
   // Confirmar que estamos no cliente
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function YogurtShowcase({ flavorsData }) {
   }, []);
 
   // Duração da transição em milissegundos
-  const transitionDuration = 800;
+  const transitionDuration = isMobile ? 600 : 800;
 
   const categoryLabels = {
     tradicionais: "Tradicionais",
@@ -173,7 +175,7 @@ export default function YogurtShowcase({ flavorsData }) {
   }
 
   // Se não tivermos dados válidos, mostrar somente um placeholder
-  if (!isValidData && !isClient) {
+  if (!isValidData && !isClient && !mobileIsClient) {
     return (
       <main className="min-h-screen w-full overflow-hidden">
         <LoadingPlaceholder />
@@ -181,8 +183,8 @@ export default function YogurtShowcase({ flavorsData }) {
     );
   }
 
-  // Pega o caminho do modelo a ser mostrado
-  const modelPath = selectedFlavor.modelPath || "/Ameixa.glb";
+  // Pega o caminho da textura a ser aplicada ao modelo
+  const texturePath = selectedFlavor.texturePath || "/Texturas/Natural.jpg";
 
   return (
     <main className="min-h-screen w-full overflow-hidden">
@@ -233,7 +235,8 @@ export default function YogurtShowcase({ flavorsData }) {
           <div className="w-full h-full">
              <ModelViewer 
                key={selectedFlavor.id} 
-               modelPath={selectedFlavor.modelPath || '/Ameixa.glb'}
+               modelPath="/Vigor.gltf"
+               texturePath={texturePath}
                bgColor={selectedFlavor.bgColor}
              />
           </div>
@@ -262,12 +265,13 @@ export default function YogurtShowcase({ flavorsData }) {
                 flavor={selectedFlavor}
                 category={selectedFlavor.category}
                 categoryLabels={categoryLabels}
+                isMobile={isMobile}
               />
             </motion.div>
           </AnimatePresence>
 
           {/* Flavor Selection Section */}
-          <div className="fixed bottom-0 left-0 w-full px-4 md:px-8 pb-8 pt-4 pointer-events-auto" style={{ zIndex: 30 }}>
+          <div className={`fixed bottom-0 left-0 w-full px-4 pb-8 pt-4 pointer-events-auto ${isMobile ? 'px-2 pb-4' : 'md:px-8'}`} style={{ zIndex: 30 }}>
             <div className="max-w-4xl mx-auto">
               <FlavorSelector
                 categories={availableCategories}
@@ -277,6 +281,7 @@ export default function YogurtShowcase({ flavorsData }) {
                 onCategoryChange={handleCategoryChange}
                 onFlavorChange={handleFlavorChange}
                 isTransitioning={isTransitioning}
+                isMobile={isMobile}
               />
             </div>
           </div>

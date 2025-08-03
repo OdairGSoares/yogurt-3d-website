@@ -6,10 +6,15 @@ export default function FlavorGrid({
   flavors = [],
   selectedFlavor,
   onFlavorChange,
-  isTransitioning = false
+  isTransitioning = false,
+  isMobile = false
 }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div className={`grid gap-3 ${
+      isMobile 
+        ? 'grid-cols-2 gap-2' 
+        : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3'
+    }`}>
       {flavors.map((flavor) => (
         <FlavorCard
           key={flavor.id}
@@ -17,6 +22,7 @@ export default function FlavorGrid({
           isSelected={selectedFlavor.id === flavor.id}
           onClick={() => onFlavorChange(flavor)}
           disabled={isTransitioning}
+          isMobile={isMobile}
         />
       ))}
     </div>

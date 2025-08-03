@@ -23,7 +23,8 @@ export default function NutritionTable({ nutritionData = null, color = "#7E22CE"
           <NutritionItem 
             key={index} 
             label={item.label} 
-            value={item.value} 
+            value={item.value}
+            color={color}
           />
         ))}
       </div>

@@ -8,7 +8,8 @@ export default function Sidebar({
   onToggle,
   flavor,
   category,
-  categoryLabels
+  categoryLabels,
+  isMobile = false
 }) {
   const sidebarWidth = 350;
   
@@ -26,7 +27,7 @@ export default function Sidebar({
         }}
       >
         <div 
-          className="h-full backdrop-blur-sm p-8 space-y-6 overflow-y-auto transition-all duration-1000 shadow-xl relative bg-white/85 border-r-4"
+          className="h-full backdrop-blur-sm p-8 space-y-6 overflow-y-auto transition-all duration-1000 shadow-xl relative bg-white/95 border-r-4"
           style={{ 
             borderColor: flavor.color
           }}
@@ -48,6 +49,8 @@ export default function Sidebar({
             flavor={flavor}
             category={category} 
             categoryLabels={categoryLabels}
+            onClose={onToggle}
+            isMobile={isMobile}
           />
         </div>
       </div>
