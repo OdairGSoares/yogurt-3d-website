@@ -18,7 +18,7 @@ export default function Sidebar({
       {/* Sidebar Panel */}
       <div 
         className={`
-          fixed left-0 top-[96px] h-[calc(100vh-96px)] 
+          fixed left-0 ${isMobile ? 'top-[92px]' : 'top-[108px]'} h-[calc(100vh-96px)] 
           transition-all duration-500 ease-in-out pointer-events-auto z-40
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
