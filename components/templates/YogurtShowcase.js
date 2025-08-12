@@ -187,7 +187,10 @@ export default function YogurtShowcase({ flavorsData }) {
   const texturePath = selectedFlavor.texturePath || "/Texturas/Natural.jpg";
 
   return (
-    <main className="min-h-screen w-full overflow-hidden">
+    <main 
+      className="min-h-screen w-full overflow-hidden"
+      style={{ backgroundColor: selectedFlavor.bgColor }}
+    >
       {/* Fade-in/Fade-out overlay durante a transição */}
       <AnimatePresence>
         {isTransitioning && (
@@ -219,17 +222,8 @@ export default function YogurtShowcase({ flavorsData }) {
       </AnimatePresence>
       
       {/* Conteúdo principal */}
-      <div className="fixed inset-0 pointer-events-none"
-           style={{ backgroundColor: selectedFlavor.bgColor }}>
-        
-        {/* Background com cor do flavor */}
-        <div className="absolute inset-0" 
-             style={{ 
-               background: `linear-gradient(to bottom, ${selectedFlavor.bgColor}, ${selectedFlavor.bgColor}40)`,
-               opacity: 0.8
-             }}>
-        </div>
-        
+      <div className="fixed inset-0 pointer-events-none">
+
         {/* Modelo 3D */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-full">

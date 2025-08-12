@@ -107,13 +107,13 @@ function Model({ modelPath, texturePath, bgColor, isTransitioning, isMobile }) {
           child.material.needsUpdate = true
         }
         
-        // Configurar transparência e outras propriedades otimizadas
+        // Configurar transparência e outras propriedades otimizadas para sombras
         child.material.transparent = true
         child.material.opacity = opacity
         child.material.roughness = 0.3
         child.material.metalness = 0.1
         
-        // Configurar sombras apenas se necessário
+        // Configurar sombras para iluminação realista
         child.castShadow = true
         child.receiveShadow = true
         
@@ -217,25 +217,31 @@ const ThreeCanvas = ({ modelPath = '/Vigor.gltf', texturePath = '/Texturas/Natur
     ? { position: [1.5, 1.5, 4], fov: 50 }
     : { position: [0, 2, 5], fov: 45 }
 
-  // Configurações responsivas dos controles otimizadas
+  // Configurações responsivas dos controles otimizadas - apenas rotação
   const controlsConfig = isMobile
     ? {
-        minDistance: 2.5,
-        maxDistance: 8,
+        minDistance: 4, // Distância fixa para manter âncora
+        maxDistance: 4, // Distância fixa para manter âncora
         minPolarAngle: Math.PI / 8,
         maxPolarAngle: Math.PI / 2,
-        target: [0, 0.2, 0],
+        target: [0, 0.2, 0], // Ponto âncora fixo
         dampingFactor: 0.05,
-        enableDamping: true
+        enableDamping: true,
+        enableZoom: false, // Desabilitar zoom
+        enablePan: false,  // Desabilitar pan
+        enableRotate: true // Apenas rotação
       }
     : {
-        minDistance: 3,
-        maxDistance: 10,
+        minDistance: 5, // Distância fixa para manter âncora
+        maxDistance: 5, // Distância fixa para manter âncora
         minPolarAngle: Math.PI / 6,
         maxPolarAngle: Math.PI / 2,
-        target: [0, 0.3, 0],
+        target: [0, 0.3, 0], // Ponto âncora fixo
         dampingFactor: 0.05,
-        enableDamping: true
+        enableDamping: true,
+        enableZoom: false, // Desabilitar zoom
+        enablePan: false,  // Desabilitar pan
+        enableRotate: true // Apenas rotação
       }
 
   // Configurações de renderização otimizadas para desktop
@@ -265,13 +271,26 @@ const ThreeCanvas = ({ modelPath = '/Vigor.gltf', texturePath = '/Texturas/Natur
       <Canvas
         camera={cameraConfig}
         gl={rendererConfig}
-        dpr={isMobile ? [1, 1.5] : [1, 1.5]} // Reduzido para desktop
-        shadows={!isMobile} // Sombras apenas em desktop
-        frameloop="always" // Renderização contínua para garantir atualização de texturas
-        performance={{ min: 0.5 }} // Performance mínima
+        dpr={isMobile ? [1, 1.5] : [1, 1.5]}
+        shadows={true} // Sempre habilitar sombras para iluminação realista
+        frameloop="always"
+        performance={{ min: 0.5 }}
       >
         <color attach="background" args={[bgColor]} />
-        <fog attach="fog" args={[bgColor, 5, 25]} />
+        <fog attach="fog" args={[bgColor, 8, 30]} />
+        
+        {/* Plano infinito como chão com material otimizado para sombras */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
+          <planeGeometry args={[50, 50]} />
+          <meshStandardMaterial 
+            color={bgColor} 
+            transparent={true}
+            opacity={0.4}
+            roughness={0.9}
+            metalness={0.05}
+            envMapIntensity={0.2}
+          />
+        </mesh>
         
         <Suspense fallback={<FallbackModel bgColor={bgColor} opacity={1} isMobile={isMobile} />}>
           <Model 
@@ -282,36 +301,73 @@ const ThreeCanvas = ({ modelPath = '/Vigor.gltf', texturePath = '/Texturas/Natur
             isMobile={isMobile}
           />
           
-          {/* Iluminação ambiente */}
-          <ambientLight intensity={0.6} />
+          {/* Sistema de iluminação realista */}
           
-          {/* Luz direcional principal */}
+          {/* Luz ambiente suave para iluminação base */}
+          <ambientLight intensity={0.3} color="#ffffff" />
+          
+          {/* Luz direcional principal (sol) - posicionada para criar sombras realistas */}
           <directionalLight
-            position={[5, 5, 5]}
-            intensity={1.2}
-            castShadow={!isMobile}
-            shadow-mapSize-width={isMobile ? 1024 : 2048}
-            shadow-mapSize-height={isMobile ? 1024 : 2048}
-            shadow-camera-far={50}
-            shadow-camera-left={-10}
-            shadow-camera-right={10}
-            shadow-camera-top={10}
-            shadow-camera-bottom={-10}
+            position={[8, 12, 6]}
+            intensity={1.8}
+            color="#ffffff"
+            castShadow={true}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-far={25}
+            shadow-camera-left={-8}
+            shadow-camera-right={8}
+            shadow-camera-top={8}
+            shadow-camera-bottom={-8}
+            shadow-bias={-0.0001}
+            shadow-normalBias={0.02}
           />
           
-          {/* Luzes de preenchimento */}
+          {/* Luz de preenchimento frontal para suavizar sombras duras */}
           <directionalLight
-            position={[-5, -5, -5]}
+            position={[-3, 8, 4]}
+            intensity={0.6}
+            color="#ffffff"
+            castShadow={false}
+          />
+          
+          {/* Luz de preenchimento traseira para separar o modelo do fundo */}
+          <directionalLight
+            position={[0, 5, -8]}
             intensity={0.4}
+            color="#ffffff"
+            castShadow={false}
+          />
+          
+          {/* Luz de preenchimento inferior para iluminar sombras */}
+          <directionalLight
+            position={[0, -3, 0]}
+            intensity={0.2}
+            color="#ffffff"
+            castShadow={false}
+          />
+          
+          {/* Luz de destaque para realçar detalhes */}
+          <spotLight
+            position={[4, 6, 2]}
+            intensity={0.8}
+            color="#ffffff"
+            angle={Math.PI / 6}
+            penumbra={0.3}
+            distance={15}
+            castShadow={false}
           />
 
           <OrbitControls 
-            enableZoom={true}
-            enablePan={true}
-            enableRotate={true}
             {...controlsConfig}
           />
-          <Environment preset="warehouse" />
+          
+          {/* Ambiente com iluminação global */}
+          <Environment 
+            preset="warehouse" 
+            background={false}
+            blur={0.5}
+          />
         </Suspense>
       </Canvas>
     </div>
